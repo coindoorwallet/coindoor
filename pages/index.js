@@ -6,10 +6,9 @@ import {
   Line,
   XAxis,
   YAxis,
-  Tooltip,
 } from "recharts";
 
-const COIN_IDS = ["bitcoin", "ethereum", "solana", "ripple"]; // XRP = ripple on CoinGecko
+const COIN_IDS = ["bitcoin", "ethereum", "solana", "ripple"]; // XRP = ripple
 
 function formatZAR(value) {
   try {
@@ -26,21 +25,21 @@ function formatZAR(value) {
 export default function Home() {
   const [coins, setCoins] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [fetchError, setFetchError] = useState(null);
+  const [error, setError] = useState(null);
 
   async function fetchPrices() {
     setLoading(true);
-    setFetchError(null);
+    setError(null);
     try {
       const ids = COIN_IDS.join(",");
       const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=zar&ids=${ids}&sparkline=true&price_change_percentage=24h`;
       const res = await fetch(url);
-      if (!res.ok) throw new Error("Failed to fetch prices");
+      if (!res.ok) throw new Error("CoinGecko error");
       const json = await res.json();
       setCoins(json);
     } catch (e) {
       console.error(e);
-      setFetchError("Unable to load prices. Try again in a moment.");
+      setError("Could not load live prices. Try again later.");
     } finally {
       setLoading(false);
     }
@@ -54,10 +53,12 @@ export default function Home() {
 
   return (
     <main className="page-root">
-      {/* subtle CSS-only neon background lives in globals.css */}
+      {/* NAV */}
       <nav className="site-nav">
         <div className="nav-left">
-          <img src="/coindoor-6.png" alt="CoinDoor logo" className="logo" />
+          <a href="#home" className="logo-wrap" aria-label="CoinDoor home">
+            <img src="/coindoor-10.png" alt="CoinDoor" className="logo" />
+          </a>
         </div>
 
         <div className="nav-links">
@@ -70,9 +71,10 @@ export default function Home() {
         </div>
       </nav>
 
+      {/* HERO */}
       <header id="home" className="hero">
         <div className="hero-inner">
-          <h1 className="hero-title">Enter The Market.</h1>
+          <h1 className="hero-title gradient-text">Enter The Market.</h1>
           <p className="hero-sub">Digital Assets. Explained Simply.</p>
 
           <div className="hero-ctas">
@@ -82,6 +84,7 @@ export default function Home() {
         </div>
       </header>
 
+      {/* MARKETS */}
       <section id="markets" className="section container">
         <div className="section-head">
           <h2>Live Market Prices (ZAR)</h2>
@@ -89,51 +92,58 @@ export default function Home() {
         </div>
 
         {loading ? (
-          <div className="grid-skeleton">
+          <div className="grid-coins">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="card-skeleton" />
             ))}
           </div>
-        ) : fetchError ? (
-          <div className="error">{fetchError}</div>
+        ) : error ? (
+          <div className="error">{error}</div>
         ) : (
           <div className="grid-coins">
-            {coins.map((c) => (
-              <article key={c.id} className="coin-card">
-                <div className="coin-top">
-                  <img src={c.image} alt={c.name} className="coin-img" />
-                  <div className="coin-meta">
-                    <div className="coin-symbol">{c.symbol.toUpperCase()}</div>
-                    <div className="coin-name">{c.name}</div>
-                  </div>
-                </div>
+            {coins.map((c) => {
+              // use last 20 points for sparkline (if available)
+              const spark = (c.sparkline_in_7d?.price || []).slice(-20);
+              const sparkData = spark.length
+                ? spark.map((p, i) => ({ x: i, pv: p }))
+                : [{ x: 0, pv: c.current_price }, { x: 1, pv: c.current_price }];
 
-                <div className="coin-bottom">
-                  <div>
-                    <div className="coin-price">{formatZAR(c.current_price)}</div>
-                    <div className={`coin-change ${c.price_change_percentage_24h >= 0 ? "up" : "down"}`}>
-                      {c.price_change_percentage_24h?.toFixed(2)}%
+              return (
+                <article key={c.id} className="coin-card">
+                  <div className="coin-top">
+                    <img src={c.image} alt={c.name} className="coin-img" />
+                    <div className="coin-meta">
+                      <div className="coin-symbol">{c.symbol.toUpperCase()}</div>
+                      <div className="coin-name">{c.name}</div>
                     </div>
                   </div>
 
-                  <div className="spark-wrap" aria-hidden>
-                    <ResponsiveContainer width="100%" height={60}>
-                      <LineChart
-                        data={(c.sparkline_in_7d?.price || []).slice(-20).map((p, idx) => ({ x: idx, pv: p }))}
-                      >
-                        <Line type="monotone" dataKey="pv" stroke="#22c55e" strokeWidth={2} dot={false} />
-                        <XAxis hide />
-                        <YAxis hide />
-                      </LineChart>
-                    </ResponsiveContainer>
+                  <div className="coin-bottom">
+                    <div>
+                      <div className="coin-price">{formatZAR(c.current_price)}</div>
+                      <div className={`coin-change ${c.price_change_percentage_24h >= 0 ? "up" : "down"}`}>
+                        {c.price_change_percentage_24h?.toFixed(2)}%
+                      </div>
+                    </div>
+
+                    <div className="spark-wrap" aria-hidden>
+                      <ResponsiveContainer width="100%" height={60}>
+                        <LineChart data={sparkData}>
+                          <Line type="monotone" dataKey="pv" stroke="#00FF99" strokeWidth={2} dot={false} />
+                          <XAxis hide />
+                          <YAxis hide />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         )}
       </section>
 
+      {/* NEWS */}
       <section id="news" className="section container">
         <h3>News</h3>
         <p className="muted">Personalised, curated headlines for the coins you follow. (Feed integration coming next.)</p>
@@ -144,9 +154,10 @@ export default function Home() {
         </div>
       </section>
 
+      {/* PODCAST */}
       <section id="podcast" className="section container">
         <h3>Podcast</h3>
-        <p className="muted">Short-form interviews and explainers — watch directly on the site.</p>
+        <p className="muted">Short interviews & explainers — watch directly on the site.</p>
         <div className="podcast-embed">
           <iframe
             title="CoinDoor Podcast"
@@ -158,6 +169,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* SUBSCRIBE */}
       <section id="subscribe" className="section subscribe container">
         <h4>Subscribe — R59 / month</h4>
         <p className="muted">Get personalised news, deeper guides, and member-only content.</p>
