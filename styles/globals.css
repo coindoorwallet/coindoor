@@ -5,59 +5,58 @@
   --accent:#c8b79e;
   --neon-green:#00FF99;
   --neon-blue:#00BFFF;
+  --glass: rgba(255,255,255,0.03);
 }
 
 /* base */
 html,body,#__next{height:100%}
 body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:#fff;}
 
-/* page root + animated neon-grid background (subtle) */
+/* PAGE root + electric glow waves background */
 .page-root{
   position:relative;
   min-height:100vh;
   overflow-x:hidden;
 }
 
-/* neon wash (moving gradient) */
+/* animated gradient wash (slow) */
 .page-root::before{
   content:"";
   position:fixed;
   inset:0;
   z-index:-3;
-  background: linear-gradient(120deg, rgba(0,255,153,0.06), rgba(0,191,255,0.04), rgba(0,255,153,0.03));
-  background-size: 400% 400%;
-  filter: blur(36px) saturate(1.05);
-  animation: neonWash 24s ease-in-out infinite;
+  background: radial-gradient(60% 60% at 10% 20%, rgba(0,255,153,0.06), transparent 15%),
+              radial-gradient(40% 40% at 85% 70%, rgba(0,191,255,0.05), transparent 12%),
+              linear-gradient(120deg, rgba(0,255,153,0.03), rgba(0,191,255,0.02));
+  filter: blur(28px) saturate(1.05);
+  animation: electricWash 26s ease-in-out infinite;
   pointer-events:none;
 }
 
-/* subtle node field to mimic network dots */
+/* soft moving wave layer for subtle motion */
 .page-root::after{
   content:"";
   position:fixed;
   inset:0;
   z-index:-2;
-  background-image:
-    radial-gradient(circle at 8% 20%, rgba(0,255,153,0.06) 0px, transparent 2px),
-    radial-gradient(circle at 80% 30%, rgba(0,191,255,0.04) 0px, transparent 2px),
-    radial-gradient(circle at 30% 78%, rgba(0,255,153,0.03) 0px, transparent 2px),
-    radial-gradient(circle at 72% 68%, rgba(0,191,255,0.025) 0px, transparent 2px);
-  background-size: 260% 180%;
-  filter: blur(8px);
-  animation: nodesDrift 28s linear infinite;
+  background:
+    linear-gradient(90deg, rgba(0,255,153,0.02), rgba(0,191,255,0.02));
+  mix-blend-mode: screen;
+  opacity:0.9;
+  transform: translateZ(0);
+  animation: slowDrift 40s linear infinite;
   pointer-events:none;
-  opacity:0.95;
 }
 
-@keyframes neonWash {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+@keyframes electricWash {
+  0% { transform: translateY(0) scale(1); background-position: 0% 50%; }
+  50% { transform: translateY(6px) scale(1.002); background-position: 100% 50%; }
+  100% { transform: translateY(0) scale(1); background-position: 0% 50%; }
 }
-@keyframes nodesDrift {
-  0% { transform: translateY(0) }
-  50% { transform: translateY(6px) }
-  100% { transform: translateY(0) }
+@keyframes slowDrift {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(-30px); }
+  100% { transform: translateX(0); }
 }
 
 /* NAV */
@@ -68,25 +67,25 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helveti
   align-items:center;
   justify-content:space-between;
   gap:20px;
-  padding:16px 28px;
+  padding:12px 28px;
   backdrop-filter: blur(6px);
   background: rgba(0,0,0,0.20);
   border-bottom: 1px solid rgba(255,255,255,0.03);
-  height:64px; /* fixed nav height so logo can be scaled */
+  height:64px;
 }
 .logo-wrap{ display:flex; align-items:center; gap:12px; text-decoration:none; }
 .logo{
-  height:44px;            /* medium size — visible without increasing nav height */
-  width:auto;
-  object-fit:contain;
-  display:block;
-  transform: translateY(1px); /* subtle centering */
+  height:44px; width:auto; object-fit:contain; display:block; transform: translateY(1px);
 }
 
 /* nav links */
-.nav-links{ display:flex; gap:18px; align-items:center; }
-.nav-links a{ color:#e6e6e6; text-decoration:none; font-weight:600; font-size:13px; opacity:0.95; }
-.subscribe-pill{ background:var(--accent); color:#070707; padding:8px 12px; border-radius:999px; font-weight:700; }
+.nav-links{ display:flex; gap:14px; align-items:center; }
+.nav-links a{ color:#e6e6e6; text-decoration:none; font-weight:700; font-size:13px; opacity:0.95; padding:8px 10px; border-radius:8px; }
+.nav-links a:hover{ background: rgba(255,255,255,0.02); }
+
+/* highlight Learn and subscribe visually */
+.em-ph{ font-weight:800; color:var(--neon-green); text-shadow: 0 6px 18px rgba(0,255,153,0.03); }
+.subscribe-pill{ background: var(--neon-green); color: #041014; padding:8px 12px; border-radius:999px; font-weight:800; box-shadow: 0 10px 30px rgba(0,255,153,0.06); }
 
 /* HERO */
 .hero{ padding:72px 20px 42px; text-align:center; z-index:5; position:relative; }
@@ -98,18 +97,18 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helveti
   background-clip: text;
   color: transparent;
   display:inline-block;
-  /* subtle glow */
-  text-shadow: 0 6px 28px rgba(0,255,153,0.03), 0 2px 8px rgba(0,191,255,0.02);
+  text-shadow: 0 10px 40px rgba(0,255,153,0.03);
 }
 .hero-sub{ color:var(--muted); margin-top:10px; font-size:18px; }
 
-/* CTA buttons */
+/* ctas */
 .hero-ctas{ margin-top:18px; display:flex; gap:12px; justify-content:center; }
-.btn{ border-radius:999px; padding:12px 18px; text-decoration:none; font-weight:700; display:inline-block; }
-.btn-primary{ background:var(--accent); color:#070707; box-shadow: 0 10px 30px rgba(200,183,158,0.06); }
+.btn{ border-radius:999px; padding:12px 18px; text-decoration:none; font-weight:800; display:inline-block; }
+.btn-primary{ background:var(--neon-green); color:#041014; box-shadow: 0 10px 30px rgba(0,255,153,0.06); }
 .btn-ghost{ border:1px solid rgba(255,255,255,0.06); color:#fff; background:transparent; }
+.btn-learn{ background: linear-gradient(90deg, var(--neon-green), var(--neon-blue)); color:#041014; box-shadow: 0 12px 36px rgba(0,255,153,0.06); } /* biggest emphasis */
 
-/* SECTION LAYOUTS */
+/* SECTION LAYOUT */
 .section{ padding:36px 20px; z-index:5; }
 .container{ max-width:1100px; margin:0 auto; }
 .section-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
@@ -117,7 +116,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helveti
 
 /* COIN CARDS */
 .grid-coins{ display:grid; grid-template-columns: repeat(4,1fr); gap:16px; }
-.coin-card{ background: rgba(255,255,255,0.03); padding:14px; border-radius:14px; border:1px solid rgba(255,255,255,0.03); min-height:150px; display:flex; flex-direction:column; justify-content:space-between; transition: transform .18s ease, box-shadow .18s ease; }
+.coin-card{ background: rgba(255,255,255,0.02); padding:14px; border-radius:14px; border:1px solid rgba(255,255,255,0.03); min-height:150px; display:flex; flex-direction:column; justify-content:space-between; transition: transform .18s ease, box-shadow .18s ease; }
 .coin-card:hover{ transform: translateY(-6px); box-shadow: 0 18px 40px rgba(0,0,0,0.6), 0 6px 20px rgba(0,255,153,0.03); }
 .coin-top{ display:flex; gap:12px; align-items:center; }
 .coin-img{ width:44px; height:44px; border-radius:999px; object-fit:cover; }
@@ -130,14 +129,16 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helveti
 
 /* skeleton */
 .card-skeleton{ height:150px; border-radius:12px; background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04), rgba(255,255,255,0.02)); animation: shimmer 1.2s linear infinite; }
+@keyframes shimmer{ 0%{ background-position:-200% 0 } 100%{ background-position:200% 0 } }
 
 /* NEWS & PODCAST */
 .grid-news{ display:grid; grid-template-columns: repeat(3,1fr); gap:16px; }
-.news-card{ background: rgba(255,255,255,0.03); padding:16px; border-radius:12px; }
+.news-card{ background: rgba(255,255,255,0.02); padding:16px; border-radius:12px; }
 .podcast-embed iframe{ width:100%; height:100%; min-height:320px; border:0; border-radius:10px; }
 
 /* SUBSCRIBE & FOOTER */
 .subscribe{ background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent); }
+.btn-sub-bottom{ background: var(--neon-green); color:#041014; padding:12px 18px; border-radius:999px; font-weight:800; box-shadow: 0 12px 40px rgba(0,255,153,0.08); }
 .site-footer{ padding:28px 20px; text-align:center; color:var(--muted); border-top:1px solid rgba(255,255,255,0.02); margin-top:30px; }
 
 /* responsive */
