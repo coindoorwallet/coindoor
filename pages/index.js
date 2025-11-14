@@ -8,7 +8,7 @@ import {
   YAxis,
 } from "recharts";
 
-const COIN_IDS = ["bitcoin", "ethereum", "solana", "ripple"]; // XRP = ripple
+const COIN_IDS = ["bitcoin", "ethereum", "solana", "ripple"]; // ripple = XRP on CoinGecko
 
 function formatZAR(value) {
   try {
@@ -20,6 +20,17 @@ function formatZAR(value) {
   } catch {
     return "R " + Number(value).toFixed(2);
   }
+}
+
+// helper: if no sparkline provided, create a small jitter series around current price
+function generateJitterSeries(price, length = 20) {
+  const out = [];
+  for (let i = 0; i < length; i++) {
+    // smoothish jitter using sine + small random
+    const jitter = Math.sin(i / 3) * (price * 0.0025) + (Math.random() - 0.5) * (price * 0.003);
+    out.push({ x: i, pv: Math.max(price + jitter, 0) });
+  }
+  return out;
 }
 
 export default function Home() {
@@ -34,12 +45,12 @@ export default function Home() {
       const ids = COIN_IDS.join(",");
       const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=zar&ids=${ids}&sparkline=true&price_change_percentage=24h`;
       const res = await fetch(url);
-      if (!res.ok) throw new Error("CoinGecko error");
+      if (!res.ok) throw new Error("CoinGecko fetch failed");
       const json = await res.json();
       setCoins(json);
     } catch (e) {
       console.error(e);
-      setError("Could not load live prices. Try again later.");
+      setError("Could not load live prices. Please try again shortly.");
     } finally {
       setLoading(false);
     }
@@ -47,7 +58,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchPrices();
-    const t = setInterval(fetchPrices, 30000); // refresh every 30s
+    const t = setInterval(fetchPrices, 30000);
     return () => clearInterval(t);
   }, []);
 
@@ -57,14 +68,14 @@ export default function Home() {
       <nav className="site-nav">
         <div className="nav-left">
           <a href="#home" className="logo-wrap" aria-label="CoinDoor home">
-            <img src="/coindoor-10.png" alt="CoinDoor" className="logo" />
+            <img src="/logo.png" alt="CoinDoor" className="logo" />
           </a>
         </div>
 
         <div className="nav-links">
           <a href="#home">Home</a>
           <a href="#markets">Markets</a>
-          <a href="#learn">Learn</a>
+          <a href="#learn" className="em-ph">Learn</a>
           <a href="#news">News</a>
           <a href="#podcast">Podcast</a>
           <a href="#subscribe" className="subscribe-pill">Subscribe</a>
@@ -78,8 +89,10 @@ export default function Home() {
           <p className="hero-sub">Digital Assets. Explained Simply.</p>
 
           <div className="hero-ctas">
-            <a href="#learn" className="btn btn-ghost">Learn the basics</a>
-            <a href="#markets" className="btn btn-primary">See Live Prices</a>
+            {/* Learn = most prominent */}
+            <a href="#learn" className="btn btn-primary btn-learn">Learn the basics</a>
+            {/* See Live Prices = lower emphasis */}
+            <a href="#markets" className="btn btn-ghost">See Live Prices</a>
           </div>
         </div>
       </header>
@@ -102,11 +115,10 @@ export default function Home() {
         ) : (
           <div className="grid-coins">
             {coins.map((c) => {
-              // use last 20 points for sparkline (if available)
               const spark = (c.sparkline_in_7d?.price || []).slice(-20);
               const sparkData = spark.length
                 ? spark.map((p, i) => ({ x: i, pv: p }))
-                : [{ x: 0, pv: c.current_price }, { x: 1, pv: c.current_price }];
+                : generateJitterSeries(c.current_price, 20);
 
               return (
                 <article key={c.id} className="coin-card">
@@ -173,7 +185,7 @@ export default function Home() {
       <section id="subscribe" className="section subscribe container">
         <h4>Subscribe — R59 / month</h4>
         <p className="muted">Get personalised news, deeper guides, and member-only content.</p>
-        <a className="btn btn-primary" href="#subscribe">Subscribe Now</a>
+        <a className="btn btn-primary btn-sub-bottom" href="#subscribe">Subscribe Now</a>
       </section>
 
       <footer className="site-footer">
