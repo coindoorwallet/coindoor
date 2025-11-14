@@ -26,8 +26,9 @@ function formatZAR(value) {
 function generateJitterSeries(price, length = 20) {
   const out = [];
   for (let i = 0; i < length; i++) {
-    // smoothish jitter using sine + small random
-    const jitter = Math.sin(i / 3) * (price * 0.0025) + (Math.random() - 0.5) * (price * 0.003);
+    const jitter =
+      Math.sin(i / 3) * (price * 0.0025) +
+      (Math.random() - 0.5) * (price * 0.003);
     out.push({ x: i, pv: Math.max(price + jitter, 0) });
   }
   return out;
@@ -63,7 +64,10 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="page-root">
+    <main className="page-root relative min-h-screen">
+      {/* GLOBAL BACKGROUND LAYER */}
+      <div className="site-background"></div>
+
       {/* NAV */}
       <nav className="site-nav">
         <div className="nav-left">
@@ -89,10 +93,12 @@ export default function Home() {
           <p className="hero-sub">Digital Assets. Explained Simply.</p>
 
           <div className="hero-ctas">
-            {/* Learn = most prominent */}
-            <a href="#learn" className="btn btn-primary btn-learn">Learn the basics</a>
-            {/* See Live Prices = lower emphasis */}
-            <a href="#markets" className="btn btn-ghost">See Live Prices</a>
+            <a href="#learn" className="btn btn-primary btn-learn">
+              Learn the basics
+            </a>
+            <a href="#markets" className="btn btn-ghost">
+              See Live Prices
+            </a>
           </div>
         </div>
       </header>
@@ -101,7 +107,9 @@ export default function Home() {
       <section id="markets" className="section container">
         <div className="section-head">
           <h2>Live Market Prices (ZAR)</h2>
-          <div className="muted">Updated every 30s · Source: CoinGecko</div>
+          <div className="muted">
+            Updated every 30s · Source: CoinGecko
+          </div>
         </div>
 
         {loading ? (
@@ -125,15 +133,25 @@ export default function Home() {
                   <div className="coin-top">
                     <img src={c.image} alt={c.name} className="coin-img" />
                     <div className="coin-meta">
-                      <div className="coin-symbol">{c.symbol.toUpperCase()}</div>
+                      <div className="coin-symbol">
+                        {c.symbol.toUpperCase()}
+                      </div>
                       <div className="coin-name">{c.name}</div>
                     </div>
                   </div>
 
                   <div className="coin-bottom">
                     <div>
-                      <div className="coin-price">{formatZAR(c.current_price)}</div>
-                      <div className={`coin-change ${c.price_change_percentage_24h >= 0 ? "up" : "down"}`}>
+                      <div className="coin-price">
+                        {formatZAR(c.current_price)}
+                      </div>
+                      <div
+                        className={`coin-change ${
+                          c.price_change_percentage_24h >= 0
+                            ? "up"
+                            : "down"
+                        }`}
+                      >
                         {c.price_change_percentage_24h?.toFixed(2)}%
                       </div>
                     </div>
@@ -141,7 +159,13 @@ export default function Home() {
                     <div className="spark-wrap" aria-hidden>
                       <ResponsiveContainer width="100%" height={60}>
                         <LineChart data={sparkData}>
-                          <Line type="monotone" dataKey="pv" stroke="#00FF99" strokeWidth={2} dot={false} />
+                          <Line
+                            type="monotone"
+                            dataKey="pv"
+                            stroke="#00FF99"
+                            strokeWidth={2}
+                            dot={false}
+                          />
                           <XAxis hide />
                           <YAxis hide />
                         </LineChart>
@@ -158,18 +182,28 @@ export default function Home() {
       {/* NEWS */}
       <section id="news" className="section container">
         <h3>News</h3>
-        <p className="muted">Personalised, curated headlines for the coins you follow. (Feed integration coming next.)</p>
+        <p className="muted">
+          Personalised, curated headlines for the coins you follow.
+        </p>
         <div className="grid-news">
-          <article className="news-card">Sample news item — headline + short summary + source</article>
-          <article className="news-card">Sample news item — headline + short summary + source</article>
-          <article className="news-card">Sample news item — headline + short summary + source</article>
+          <article className="news-card">
+            Sample news item — headline + short summary + source
+          </article>
+          <article className="news-card">
+            Sample news item — headline + short summary + source
+          </article>
+          <article className="news-card">
+            Sample news item — headline + short summary + source
+          </article>
         </div>
       </section>
 
       {/* PODCAST */}
       <section id="podcast" className="section container">
         <h3>Podcast</h3>
-        <p className="muted">Short interviews & explainers — watch directly on the site.</p>
+        <p className="muted">
+          Short interviews & explainers — watch directly on the site.
+        </p>
         <div className="podcast-embed">
           <iframe
             title="CoinDoor Podcast"
@@ -184,12 +218,19 @@ export default function Home() {
       {/* SUBSCRIBE */}
       <section id="subscribe" className="section subscribe container">
         <h4>Subscribe — R59 / month</h4>
-        <p className="muted">Get personalised news, deeper guides, and member-only content.</p>
-        <a className="btn btn-primary btn-sub-bottom" href="#subscribe">Subscribe Now</a>
+        <p className="muted">
+          Get personalised news, deeper guides, and member-only content.
+        </p>
+        <a className="btn btn-primary btn-sub-bottom" href="#subscribe">
+          Subscribe Now
+        </a>
       </section>
 
       <footer className="site-footer">
-        <div>© {new Date().getFullYear()} CoinDoor — Digital Assets. Explained Simply.</div>
+        <div>
+          © {new Date().getFullYear()} CoinDoor — Digital Assets. Explained
+          Simply.
+        </div>
       </footer>
     </main>
   );
