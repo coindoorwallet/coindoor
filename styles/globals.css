@@ -1,117 +1,154 @@
-/* Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* styles/globals.css */
+:root{
+  --bg:#070707;
+  --muted:#9b958f;
+  --accent:#c8b79e;
+  --neon-green:#00FF99;
+  --neon-blue:#00BFFF;
+  --glass: rgba(255,255,255,0.03);
 }
 
-body {
-  font-family: Arial, sans-serif;
-  background: black;
-  color: white;
+/* base */
+html,body,#__next{height:100%}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:#fff;}
+
+/* PAGE root + electric glow waves background */
+.page-root{
+  position:relative;
+  min-height:100vh;
+  overflow-x:hidden;
 }
 
-/* Navigation */
-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 40px;
+/* animated gradient wash (slow) */
+.page-root::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-3;
+  background: radial-gradient(60% 60% at 10% 20%, rgba(0,255,153,0.06), transparent 15%),
+              radial-gradient(40% 40% at 85% 70%, rgba(0,191,255,0.05), transparent 12%),
+              linear-gradient(120deg, rgba(0,255,153,0.03), rgba(0,191,255,0.02));
+  filter: blur(28px) saturate(1.05);
+  animation: electricWash 26s ease-in-out infinite;
+  pointer-events:none;
 }
 
-nav .logo {
-  height: 45px;
+/* soft moving wave layer for subtle motion */
+.page-root::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  background:
+    linear-gradient(90deg, rgba(0,255,153,0.02), rgba(0,191,255,0.02));
+  mix-blend-mode: screen;
+  opacity:0.9;
+  transform: translateZ(0);
+  animation: slowDrift 40s linear infinite;
+  pointer-events:none;
 }
 
-nav ul {
-  display: flex;
-  list-style: none;
-  gap: 25px;
+@keyframes electricWash {
+  0% { transform: translateY(0) scale(1); background-position: 0% 50%; }
+  50% { transform: translateY(6px) scale(1.002); background-position: 100% 50%; }
+  100% { transform: translateY(0) scale(1); background-position: 0% 50%; }
+}
+@keyframes slowDrift {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(-30px); }
+  100% { transform: translateX(0); }
 }
 
-nav ul li a {
-  color: white;
-  text-decoration: none;
-  font-weight: 500;
+/* NAV */
+.site-nav{
+  position:relative;
+  z-index:10;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  padding:12px 28px;
+  backdrop-filter: blur(6px);
+  background: rgba(0,0,0,0.20);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  height:64px;
+}
+.logo-wrap{ display:flex; align-items:center; gap:12px; text-decoration:none; }
+.logo{
+  height:44px; width:auto; object-fit:contain; display:block; transform: translateY(1px);
 }
 
-.btn-green {
-  background: #00ff9d;
-  color: #000;
-  padding: 10px 18px;
-  border-radius: 30px;
-  font-weight: bold;
-}
+/* nav links */
+.nav-links{ display:flex; gap:14px; align-items:center; }
+.nav-links a{ color:#e6e6e6; text-decoration:none; font-weight:700; font-size:13px; opacity:0.95; padding:8px 10px; border-radius:8px; }
+.nav-links a:hover{ background: rgba(255,255,255,0.02); }
 
-.btn-outline {
-  padding: 10px 18px;
-  border-radius: 30px;
-  border: 1px solid white;
-}
+/* highlight Learn and subscribe visually */
+.em-ph{ font-weight:800; color:var(--neon-green); text-shadow: 0 6px 18px rgba(0,255,153,0.03); }
+.subscribe-pill{ background: var(--neon-green); color: #041014; padding:8px 12px; border-radius:999px; font-weight:800; box-shadow: 0 10px 30px rgba(0,255,153,0.06); }
 
-/* Hero section */
-.hero {
-  text-align: center;
-  padding: 120px 20px;
+/* HERO */
+.hero{ padding:72px 20px 42px; text-align:center; z-index:5; position:relative; }
+.hero-inner{ max-width:980px; margin:0 auto; }
+.hero-title{ font-size:48px; margin:0; line-height:1.02; font-weight:800; }
+.gradient-text{
+  background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display:inline-block;
+  text-shadow: 0 10px 40px rgba(0,255,153,0.03);
 }
+.hero-sub{ color:var(--muted); margin-top:10px; font-size:18px; }
 
-.hero h1 {
-  font-size: 3rem;
-  margin-bottom: 20px;
+/* ctas */
+.hero-ctas{ margin-top:18px; display:flex; gap:12px; justify-content:center; }
+.btn{ border-radius:999px; padding:12px 18px; text-decoration:none; font-weight:800; display:inline-block; }
+.btn-primary{ background:var(--neon-green); color:#041014; box-shadow: 0 10px 30px rgba(0,255,153,0.06); }
+.btn-ghost{ border:1px solid rgba(255,255,255,0.06); color:#fff; background:transparent; }
+.btn-learn{ background: linear-gradient(90deg, var(--neon-green), var(--neon-blue)); color:#041014; box-shadow: 0 12px 36px rgba(0,255,153,0.06); } /* biggest emphasis */
+
+/* SECTION LAYOUT */
+.section{ padding:36px 20px; z-index:5; }
+.container{ max-width:1100px; margin:0 auto; }
+.section-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+.muted{ color:var(--muted); font-size:14px; }
+
+/* COIN CARDS */
+.grid-coins{ display:grid; grid-template-columns: repeat(4,1fr); gap:16px; }
+.coin-card{ background: rgba(255,255,255,0.02); padding:14px; border-radius:14px; border:1px solid rgba(255,255,255,0.03); min-height:150px; display:flex; flex-direction:column; justify-content:space-between; transition: transform .18s ease, box-shadow .18s ease; }
+.coin-card:hover{ transform: translateY(-6px); box-shadow: 0 18px 40px rgba(0,0,0,0.6), 0 6px 20px rgba(0,255,153,0.03); }
+.coin-top{ display:flex; gap:12px; align-items:center; }
+.coin-img{ width:44px; height:44px; border-radius:999px; object-fit:cover; }
+.coin-symbol{ font-weight:800; }
+.coin-name{ font-size:12px; color:var(--muted); margin-top:2px; }
+.coin-price{ font-size:20px; font-weight:800; margin-bottom:4px; }
+.coin-change.up{ color:#34d399; }
+.coin-change.down{ color:#fb7185; }
+.spark-wrap{ width:160px; height:60px; }
+
+/* skeleton */
+.card-skeleton{ height:150px; border-radius:12px; background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04), rgba(255,255,255,0.02)); animation: shimmer 1.2s linear infinite; }
+@keyframes shimmer{ 0%{ background-position:-200% 0 } 100%{ background-position:200% 0 } }
+
+/* NEWS & PODCAST */
+.grid-news{ display:grid; grid-template-columns: repeat(3,1fr); gap:16px; }
+.news-card{ background: rgba(255,255,255,0.02); padding:16px; border-radius:12px; }
+.podcast-embed iframe{ width:100%; height:100%; min-height:320px; border:0; border-radius:10px; }
+
+/* SUBSCRIBE & FOOTER */
+.subscribe{ background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent); }
+.btn-sub-bottom{ background: var(--neon-green); color:#041014; padding:12px 18px; border-radius:999px; font-weight:800; box-shadow: 0 12px 40px rgba(0,255,153,0.08); }
+.site-footer{ padding:28px 20px; text-align:center; color:var(--muted); border-top:1px solid rgba(255,255,255,0.02); margin-top:30px; }
+
+/* responsive */
+@media (max-width:1000px){
+  .grid-coins{ grid-template-columns: repeat(2,1fr); }
+  .grid-news{ grid-template-columns: repeat(2,1fr); }
 }
-
-.hero p {
-  font-size: 1.2rem;
-  max-width: 650px;
-  margin: auto;
-  opacity: 0.8;
-}
-
-/* Coin grid */
-.coins-section {
-  padding: 80px 20px;
-  text-align: center;
-}
-
-.coins-section h2 {
-  font-size: 2rem;
-  margin-bottom: 50px;
-}
-
-.coin-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 30px;
-  padding: 0 20px;
-}
-
-.coin {
-  background: #111;
-  padding: 25px;
-  border-radius: 14px;
-}
-
-.chart-line {
-  width: 100%;
-  height: 60px;
-  background: linear-gradient(to right, #0ff, #09f);
-  border-radius: 6px;
-  margin-top: 10px;
-}
-
-/* CTA bottom */
-.cta-bottom {
-  text-align: center;
-  padding: 80px 20px;
-}
-
-.cta-bottom a {
-  text-decoration: none;
-  display: inline-block;
-  margin-top: 20px;
-  background: #00ff9d;
-  padding: 12px 25px;
-  border-radius: 30px;
-  color: black;
-  font-weight: bold;
+@media (max-width:700px){
+  .grid-coins{ grid-template-columns: 1fr; }
+  .grid-news{ grid-template-columns: 1fr; }
+  .hero-title{ font-size:34px; }
+  .nav-links{ display:none; }
 }
