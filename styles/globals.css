@@ -1,0 +1,6 @@
+
+/* globals.css - minimal baseline for deployable site */
+:root { --bg:#0b0b0b; --muted:#9b958f; --accent:#c8b79e; }
+html,body,#__next { height:100%; }
+body { margin:0; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background: var(--bg); color: #fff; }
+a { color: inherit; text-decoration: none; }
