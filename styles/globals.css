@@ -1,6 +1,122 @@
+/* styles/globals.css - overwrite existing file with this */
+:root{
+  --bg:#070707;
+  --muted:#9b958f;
+  --accent:#c8b79e;
+  --neon-green: #00FF99;
+  --neon-blue: #00BFFF;
+  --glass: rgba(255,255,255,0.04);
+}
 
-/* globals.css - minimal baseline for deployable site */
-:root { --bg:#0b0b0b; --muted:#9b958f; --accent:#c8b79e; }
-html,body,#__next { height:100%; }
-body { margin:0; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background: var(--bg); color: #fff; }
-a { color: inherit; text-decoration: none; }
+/* page basics */
+html,body,#__next{height:100%}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:#fff;}
+
+/* FULL-PAGE subtle neon animation (CSS-only) */
+.page-root { position:relative; min-height:100vh; overflow-x:hidden; }
+
+/* overlay using layered gradients + moving radial dots */
+.page-root::before,
+.page-root::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  pointer-events:none;
+}
+
+/* moving gradient wash */
+.page-root::before{
+  background: linear-gradient(120deg, rgba(0,255,153,0.06), rgba(0,191,255,0.04), rgba(0,255,153,0.03));
+  background-size: 400% 400%;
+  filter: blur(38px) saturate(1.2);
+  animation: neonWash 22s ease-in-out infinite;
+}
+
+/* subtle moving node field (small dots) */
+.page-root::after{
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(0,255,153,0.06) 0px, transparent 2px),
+    radial-gradient(circle at 80% 30%, rgba(0,191,255,0.05) 0px, transparent 2px),
+    radial-gradient(circle at 30% 80%, rgba(0,255,153,0.04) 0px, transparent 2px),
+    radial-gradient(circle at 70% 70%, rgba(0,191,255,0.03) 0px, transparent 2px);
+  background-size: 200% 200%;
+  filter: blur(10px);
+  animation: nodesDrift 26s linear infinite;
+  opacity:0.9;
+}
+
+/* animations */
+@keyframes neonWash {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes nodesDrift {
+  0% { background-position: 0% 0%; transform: translateZ(0) scale(1); }
+  50% { background-position: 50% 50%; transform: translateZ(0) scale(1.02); }
+  100% { background-position: 0% 0%; transform: translateZ(0) scale(1); }
+}
+
+/* nav */
+.site-nav{ position:relative; z-index:10; display:flex; align-items:center; justify-content:space-between; padding:20px 28px; backdrop-filter: blur(6px); background: rgba(0,0,0,0.28); border-bottom: 1px solid rgba(255,255,255,0.03); }
+.logo{ height:40px; display:block; }
+.nav-links{ display:flex; gap:18px; align-items:center; }
+.nav-links a{ color: #d9d9d9; text-decoration:none; font-weight:600; font-size:13px; opacity:0.95; }
+.subscribe-pill{ background:var(--accent); color:#070707; padding:8px 12px; border-radius:999px; }
+
+/* hero */
+.hero{ padding:72px 20px; text-align:center; z-index:5; position:relative; }
+.hero-title{ font-size:48px; margin:0 0 10px 0; line-height:1.02; font-weight:800; color:#fff; }
+.hero-sub{ color:var(--muted); margin:6px 0 18px 0; }
+
+/* ctas */
+.hero-ctas{ display:flex; gap:12px; justify-content:center; margin-top:18px; }
+.btn{ display:inline-block; padding:12px 18px; border-radius:999px; text-decoration:none; font-weight:700; }
+.btn-primary{ background:var(--accent); color:#070707; box-shadow: 0 6px 24px rgba(200,183,158,0.08); }
+.btn-ghost{ border:1px solid rgba(255,255,255,0.06); color:#fff; background:transparent; }
+
+/* sections */
+.section{ padding:36px 20px; z-index:5; }
+.container{ max-width:1100px; margin:0 auto; }
+
+/* markets grid */
+.section-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+.muted{ color:var(--muted); font-size:14px; }
+
+.grid-coins{ display:grid; grid-template-columns: repeat(4,1fr); gap:16px; }
+.coin-card{ background: rgba(255,255,255,0.03); padding:14px; border-radius:14px; border:1px solid rgba(255,255,255,0.03); display:flex; flex-direction:column; justify-content:space-between; min-height:140px; transition: box-shadow .18s ease, transform .18s ease; }
+.coin-card:hover{ transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 6px 20px rgba(0,255,153,0.03); }
+.coin-top{ display:flex; gap:12px; align-items:center; }
+.coin-img{ width:44px; height:44px; border-radius:999px; object-fit:cover; }
+.coin-symbol{ font-weight:800; }
+.coin-name{ font-size:12px; color:var(--muted); margin-top:2px; }
+.coin-price{ font-size:20px; font-weight:800; margin-bottom:4px; }
+.coin-change.up{ color:#34d399; }
+.coin-change.down{ color:#fb7185; }
+
+/* responsive & skeleton */
+.grid-skeleton{ display:grid; grid-template-columns: repeat(4,1fr); gap:16px; }
+.card-skeleton{ height:140px; border-radius:12px; background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04), rgba(255,255,255,0.02)); animation: shimmer 1.2s linear infinite; }
+@keyframes shimmer{ 0%{ background-position:-200% 0 } 100%{ background-position:200% 0 } }
+
+/* news & podcast */
+.grid-news{ display:grid; grid-template-columns: repeat(3,1fr); gap:16px; }
+.news-card{ background: rgba(255,255,255,0.03); padding:16px; border-radius:12px; }
+
+/* podcast embed */
+.podcast-embed iframe{ width:100%; height:100%; min-height:320px; border:0; border-radius:10px; }
+
+/* subscribe */
+.subscribe{ background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent); }
+
+/* footer */
+.site-footer{ padding:28px 20px; text-align:center; color:var(--muted); border-top:1px solid rgba(255,255,255,0.02); margin-top:30px; }
+
+/* small screens */
+@media (max-width:900px){
+  .grid-coins{ grid-template-columns: 1fr; }
+  .grid-news{ grid-template-columns: 1fr; }
+  .hero-title{ font-size:34px; }
+  .nav-links{ display:none; }
+}
